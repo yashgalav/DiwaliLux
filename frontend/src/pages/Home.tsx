@@ -22,10 +22,7 @@ export default function HomePage() {
   const isAuthenticated = useRecoilValue(isAuthenticatedAtom);
   const openWhatsApp = () => {
     window.open('https://wa.me/918448455466?text=Hello!', '_blank');
-  };
-  const clientId=import.meta.env.VITE_GOOGLE_CLIENT_ID || "hi"
-  console.log("clientId :"+clientId);
-  
+  };  
 
   const features = [
     {
