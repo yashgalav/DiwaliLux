@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+model user {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String?
+  password     String?
+  isAdmin      Boolean  @default(false)
+  userImage    String?
+  loginMethod  String?
+  googleId     String?   @unique // ✅ Add this field
+  carts        cart[]
+  orders       Order[]
+}
+
+
+model product {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  description     String
+  point1          String
+  point2          String
+  point3          String
+  price           Float
+  originalPrice   Float
+  main            String
+  left            String
+  top             String
+  mainFileId      String
+  topFileId       String
+  leftFileId      String
+  quantity        Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  carts         cart[]
+  orderItems    OrderItem[]
+}
+
+
+model cart {
+  id        String   @id @default(uuid())
+  quantity  Int
+  userId    String
+  productId String
+  user      user     @relation(fields: [userId], references: [id])
+  product   product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Otp {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  otp         Int
+  expiresAt   DateTime
+  createdAt   DateTime @default(now()) 
+  verified    Boolean  @default(false)
+  
+  @@index([email])
+}
+
+
+model Order {
+  id          String       @id @default(uuid())
+  user        user         @relation(fields: [userId], references: [id])
+  userId      String
+  items       OrderItem[]
+  totalAmount Int
+  name        String
+  phoneNo     String
+  Address     String
+  status      OrderStatus  @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Int      // snapshot price at order time
+}
+
+
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
