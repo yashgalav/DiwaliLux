@@ -15,8 +15,9 @@ import Profile from "../components/Profile";
 import { useRecoilValue } from "recoil";
 import { isAuthenticatedAtom } from "../store/Atom";
 import Hero from "../assets/hero-diya.jpg";
-
-
+import img1 from "../assets/img1.png";
+import img2 from "../assets/img2.png";
+import img3 from "../assets/img3.png";
 
 export default function HomePage() {
   const isAuthenticated = useRecoilValue(isAuthenticatedAtom);
@@ -72,7 +73,7 @@ export default function HomePage() {
       name: "Heritage Diya & Nuts Ensemble",
       price: "₹899",
       originalPrice: "₹1,299",
-      image: "/placeholder.svg?height=400&width=400",
+      image: img1,
       features: ["12 Artisan Diyas", "Premium Mixed Nuts 350g", "Silk-Lined Gift Box"],
       badge: "Bestseller",
       badgeColor: "from-emerald-500 to-teal-500",
@@ -81,7 +82,7 @@ export default function HomePage() {
       name: "Executive Diwali Hamper",
       price: "₹1,599",
       originalPrice: "₹2,199",
-      image: "/placeholder.svg?height=400&width=400",
+      image: img2,
       features: ["18 Designer Diyas", "Gourmet Dry Fruits 500g", "Corporate Branding"],
       badge: "Most Popular",
       badgeColor: "from-amber-500 to-orange-500",
@@ -90,7 +91,7 @@ export default function HomePage() {
       name: "Maharaja Collection",
       price: "₹2,499",
       originalPrice: "₹3,299",
-      image: "/placeholder.svg?height=400&width=400",
+      image: img3,
       features: ["24 Gold-Accent Diyas", "Exotic Dry Fruits 750g", "Handcrafted Wooden Box"],
       badge: "Exclusive",
       badgeColor: "from-purple-500 to-pink-500",
