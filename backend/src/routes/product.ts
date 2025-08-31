@@ -225,7 +225,7 @@ async function deleteFromImageKit(fileId: string, privateKey: string) {
 }
 
 
-productRouter.get('/products', async (c) => {
+productRouter.get('/products/all', async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -292,6 +292,62 @@ productRouter.get('/products', async (c) => {
     console.error("Error fetching products:", err);
     c.status(500);
     return c.json({ error: "Failed to fetch products" });
+  }
+});
+
+// currently using this
+productRouter.get('/products', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const search = c.req.query('search')?.toLowerCase() || '';
+
+  const whereClause: Prisma.productWhereInput | undefined = search
+    ? {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      }
+    : undefined;
+
+  try {
+    const products = await prisma.product.findMany({
+      where: whereClause,
+    });
+
+    const finalItems = products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      originalPrice: p.originalPrice,
+      features: [p.point1, p.point2, p.point3],
+      inStock: p.quantity > 0,
+      image: p.main,
+      popular: p.quantity < 100 && p.quantity > 0,
+      rating: Math.floor(Math.random() * 5) + 1, // random rating 1-5
+    }));
+
+    return c.json({
+      totalItems: products.length,
+      items: finalItems,
+    });
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    c.status(500);
+    return c.json({ error: 'Failed to fetch products' });
   }
 });
 
