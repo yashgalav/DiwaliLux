@@ -122,7 +122,7 @@ export default function ProductCardFull({ id, image, features, inStock, popular,
                         <h3 className="text-xl font-semibold">{name}</h3>
                         <div className="flex items-center space-x-1">
                             <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                            <span className="text-sm text-gray-600">{rating}</span>
+                            {/* <span className="text-sm text-gray-600">{rating}</span> */}
                             {/* <span className="text-sm text-gray-400">({reviews})</span> */}
                         </div>
                     </div>

@@ -2,6 +2,7 @@
 import { Badge } from './Badge'
 import { Button } from './Button'
 import placeholder from '../assets/placeholder.svg'
+import { Link } from 'react-router-dom'
 
 interface productType {
     name: string,
@@ -63,9 +64,12 @@ export default function ProductCard({ name, price, originalPrice, imageUrl, feat
                         ))}
                     </ul>
 
-                    <Button classname=" w-full  bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-medium">
+                    <Link to={"/products"}>
+                        <Button classname=" w-full  bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-medium">
                         Select This Collection
-                    </Button>
+                        </Button>
+                    </Link>
+                    
                 </div>
             </div>
         </div>

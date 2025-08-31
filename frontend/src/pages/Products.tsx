@@ -32,136 +32,18 @@ export default function Products() {
     };
     
 
-    // const products = [
-    //     {
-    //         id: 1,
-    //         name: "Heritage Diya & Nuts Ensemble",
-    //         price: 499,
-    //         originalPrice: 699,
-    //         image: "",
-    //         category: "combo",
-    //         rating: 4.8,
-    //         reviews: 124,
-    //         features: ["8 Premium Diyas", "Mixed Dry Fruits 250g", "Elegant Gift Box"],
-    //         description: "Perfect combination of traditional diyas with premium mixed dry fruits",
-    //         inStock: true,
-    //         popular: false,
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Executive Diwali Hamper",
-    //         price: 899,
-    //         originalPrice: 1199,
-    //         image: "",
-    //         category: "hamper",
-    //         rating: 4.9,
-    //         reviews: 89,
-    //         features: ["12 Designer Diyas", "Premium Dry Fruits 500g", "Corporate Branding"],
-    //         description: "Premium corporate hamper with custom branding options",
-    //         inStock: true,
-    //         popular: true,
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Luxury Festive Collection",
-    //         price: 1499,
-    //         originalPrice: 1999,
-    //         image: "",
-    //         category: "luxury",
-    //         rating: 5.0,
-    //         reviews: 67,
-    //         features: ["20 Artisan Diyas", "Gourmet Dry Fruits 750g", "Wooden Gift Box"],
-    //         description: "Luxury collection with handcrafted wooden packaging",
-    //         inStock: true,
-    //         popular: false,
-    //     },
-    //     {
-    //         id: 4,
-    //         name: "Premium Dry Fruits Platter",
-    //         price: 799,
-    //         originalPrice: 999,
-    //         image: "",
-    //         category: "dryfruits",
-    //         rating: 4.7,
-    //         reviews: 156,
-    //         features: ["Almonds, Cashews, Pistachios", "500g Premium Quality", "Decorative Platter"],
-    //         description: "Gourmet dry fruits arranged in an elegant decorative platter",
-    //         inStock: true,
-    //         popular: false,
-    //     },
-    //     {
-    //         id: 5,
-    //         name: "Traditional Diya Set",
-    //         price: 349,
-    //         originalPrice: 449,
-    //         image: "",
-    //         category: "diyas",
-    //         rating: 4.8,
-    //         reviews: 92,
-    //         features: ["15 Handcrafted Diyas", "Traditional Clay", "Festive Packaging"],
-    //         description: "Authentic handcrafted clay diyas for traditional celebrations",
-    //         inStock: false,
-    //         popular: false,
-    //     },
-    //     {
-    //         id: 6,
-    //         name: "Corporate Bulk Package",
-    //         price: 2499,
-    //         originalPrice: 3199,
-    //         image: "",
-    //         category: "bulk",
-    //         rating: 4.9,
-    //         reviews: 45,
-    //         features: ["50 Gift Sets", "Diyas + Dry Fruits", "Bulk Discount"],
-    //         description: "Perfect for large corporate events and employee appreciation",
-    //         inStock: true,
-    //         popular: true,
-    //     },
-    //     {
-    //         id: 7,
-    //         name: "Exotic Dry Fruits Collection",
-    //         price: 1299,
-    //         originalPrice: 1699,
-    //         image: "",
-    //         category: "dryfruits",
-    //         rating: 4.9,
-    //         reviews: 78,
-    //         features: ["Dates, Figs, Apricots", "Premium 750g Pack", "Luxury Packaging"],
-    //         description: "Exotic dry fruits collection in premium gift packaging",
-    //         inStock: true,
-    //         popular: false,
-    //     },
-    //     {
-    //         id: 8,
-    //         name: "Designer Diya Combo",
-    //         price: 649,
-    //         originalPrice: 849,
-    //         image: "",
-    //         category: "combo",
-    //         rating: 4.6,
-    //         reviews: 134,
-    //         features: ["10 Designer Diyas", "Assorted Sweets 300g", "Premium Box"],
-    //         description: "Designer diyas paired with traditional Indian sweets",
-    //         inStock: true,
-    //         popular: false,
-    //     },
-    // ]
-
-    // useEffect( ()=>{
-    //     axios.get("http://localhost:8787/api/v1/product/products?search=&page=1&limit=5")
-    // })
-
-    const filteredProducts = (products ?? []).filter((product) => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesCategory = filterCategory === "all" 
-        return matchesSearch && matchesCategory
-    })
-
-    // const filteredProducts = products.filter((product) => {
+    
+    // const filteredProducts = (products ?? []).filter((product) => {
     //     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    //     const matchesCategory = filterCategory === "all" || product.category === filterCategory
+    //     const matchesCategory = filterCategory === "all" 
     //     return matchesSearch && matchesCategory
     // })
+
+    const filteredProducts = products.filter((product) => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesCategory = filterCategory === "all" || product.name.toLowerCase().includes(filterCategory.toLowerCase())
+        return matchesSearch && matchesCategory
+    })
 
     const openWhatsApp = () => {
         window.open('https://wa.me/918448455466?text=Hello!', '_blank');
@@ -257,12 +139,11 @@ export default function Products() {
                                 className="w-48 border rounded-lg p-2 font-light text-sm"
                             >
                                 <option value="all">All Categories</option>
-                                <option value="combo">Diya & Dry Fruits Combo</option>
-                                <option value="hamper">Premium Hampers</option>
-                                <option value="luxury">Luxury Collections</option>
-                                <option value="dryfruits">Dry Fruits Only</option>
-                                <option value="diyas">Diyas Only</option>
-                                <option value="bulk">Bulk Orders</option>
+                                {/* <option value="combo">Diya & Dry Fruits Combo</option> */}
+                                <option value="Premium">Premium Hampers</option>
+                                <option value="Round & Flower">Luxury Collections</option>
+                                <option value="matki">Matki Diyas Only</option>
+                                <option value="diya">Diyas Only</option>
                             </select>
                         </div>
                         <div className="flex items-center gap-4">
