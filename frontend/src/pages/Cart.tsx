@@ -70,7 +70,7 @@ export default function Cart() {
     }
 
     const checkOutOpen = () =>{
-        if(subTotal < 1 ){
+        if(subTotal < 10 ){
             toast.error("The minimum order quantity is 10 pieces. Please contact us on WhatsApp!");
             setIsOpen(false)
             return
