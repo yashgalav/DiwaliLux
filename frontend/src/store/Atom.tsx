@@ -49,3 +49,23 @@ export const deliveryPersonAddressAtom = atom({
     key: "deliveryPersonAddressAtom",
     default: ""
 })
+
+export const deliveryPincodeAtom = atom({
+    key: "deliveryPincodeAtom",
+    default: ""
+})
+
+export const deliveryDistrictAtom = atom({
+    key: "deliveryDistrictrAtom",
+    default: ""
+})
+
+export const deliveryStateAtom = atom({
+    key: "deliveryStateAtom",
+    default: ""
+})
+
+export const isDeliveryPolicyCheckedAtom = atom({
+    key: "isDeliveryPolicyCheckedAtom",
+    default: false
+})

@@ -1,13 +1,13 @@
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ShoppingCart, Sparkles, X } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { ListOrdered, ShoppingCart, Sparkles, X } from 'lucide-react'
+import { Link, Links } from 'react-router-dom'
 import { Button } from '../components/Button'
 
 import Profile from '../components/Profile'
 import { useRecoilValue } from 'recoil'
 import { isAuthenticatedAtom } from '../store/Atom'
-import {  useOrderItems } from '../hooks'
+import { useOrderItems } from '../hooks'
 import OrderCard from '../components/OrderCard'
 import Popup from '../components/Popup'
 import { useState } from 'react'
@@ -22,60 +22,65 @@ export default function Order() {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-    const handleCancelClick = (id: string) => {
-        console.log(id);
-        
-        setSelectedOrderId(id);
-        setIsOpen(true);
-    };
+    // const handleCancelClick = (id: string) => {
+    //     console.log(id);
 
-    const handleConfirm = async () => {
-        if (!selectedOrderId) return;
-        console.log("Cancelling order:", selectedOrderId);
-        try {
-            const token = localStorage.getItem("authToken");
-            const response = await axios.post(`${BACKEND_URL}/api/v1/order/cancel/${selectedOrderId}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                }
-            })
-            const message = response?.data?.message
-            window.location.reload();
-            toast.success(message, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            })
+    //     setSelectedOrderId(id);
+    //     setIsOpen(true);
+    // };
 
-        } catch (ex: any) {
-            const errorMessage = ex.response?.data?.message || ex.message || "Something went wrong!";
-            toast.error(errorMessage, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            })
-        }
-        setIsOpen(false);
-        setSelectedOrderId(null);
-    };
+    // const handleConfirm = async () => {
+    //     if (!selectedOrderId) return;
+    //     console.log("Cancelling order:", selectedOrderId);
+    //     try {
+    //         const token = localStorage.getItem("authToken");
+    //         const response = await axios.post(`${BACKEND_URL}/api/v1/order/cancel/${selectedOrderId}`, {}, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //                 "Content-Type": "application/json",
+    //             }
+    //         })
+    //         const message = response?.data?.message
+    //         window.location.reload();
+    //         toast.success(message, {
+    //             position: "top-center",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: false,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             theme: "light",
+    //             transition: Bounce,
+    //         })
+
+    //     } catch (ex: any) {
+    //         const errorMessage = ex.response?.data?.message || ex.message || "Something went wrong!";
+    //         toast.error(errorMessage, {
+    //             position: "top-center",
+    //             autoClose: 5000,
+    //             hideProgressBar: false,
+    //             closeOnClick: false,
+    //             pauseOnHover: true,
+    //             draggable: true,
+    //             progress: undefined,
+    //             theme: "light",
+    //             transition: Bounce,
+    //         })
+    //     }
+    //     setIsOpen(false);
+    //     setSelectedOrderId(null);
+    // };
 
     const openWhatsApp = () => {
         window.open('https://wa.me/918448455466?text=Hello!', '_blank');
     };
 
+
+    let isOrdersEmpty = false;
+    if (!orderItems || orderItems.length === 0) {
+        isOrdersEmpty = true
+    }
 
 
 
@@ -115,27 +120,47 @@ export default function Order() {
                 </div>
             </header>
 
-            <div className='mt-16  flex flex-col space-y-5 justify-center container mx-auto px-4 '>
-                <div className='bg-white'>
-                    <div className='flex justify-between border-b m-4 pb-4'>
-                        <div className=' text-3xl '>
-                            Orders
+            {isOrdersEmpty ?
+                <div className='h-screen flex justify-center items-center'>
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 mb-4">
+                            {/* <ListOrdered className="h-16 w-16 mx-auto" /> */}
+                            <div className="text-8xl ">📦</div>
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-600 mb-2">No orders yet</h3>
+                        <p className="text-gray-500">Looks like you haven’t placed any orders. Start shopping now and make this Diwali extra special!</p>
+                        <Link to={"/products"}>
+                            <button className="mt-4 px-5 py-2 bg-orange-500 text-white rounded-lg cursor-pointer hover:bg-orange-600 transition">
+                                Shop Now
+                            </button>
+                        </Link>
+                    </div>
+                </div>
+                :
+                <div className='mt-16  flex flex-col space-y-5 justify-center container mx-auto px-4 '>
+                    <div className='bg-white'>
+                        <div className='flex justify-between border-b m-4 pb-4'>
+                            <div className=' text-3xl '>
+                                Orders
+                            </div>
+
                         </div>
 
-                    </div>
+                        {orderItems?.map((x, index) => {
+                            return (
+                                <div key={index} className="border-b mb-10">
+                                    <div className="flex justify-between mx-4">
+                                        <div>
+                                            <div className="text-xl">Order : {x.date}</div>
+                                            <div className="text-lg text-orange-600">Total Amount : ₹{formatPrice(x.totalAmount)}</div>
+                                            <div className="flex-wrap text-sm text-gray-400">{x.address}, {x.district}</div>
+                                            <div className="flex-wrap text-sm text-gray-400">{x.pincode}, {x.state}</div>
+                                            <span className={`${x.isDeliver || x.status === "PAID" ? "text-green-600 bg-green-200 rounded-lg py-1 px-2" : "text-yellow-600 bg-yellow-100 rounded-lg py-1 px-2"} text-sm`}>
+                                                {x.status}
+                                            </span>
+                                        </div>
 
-                    {orderItems?.map((x, index) => {
-                        return (
-                            <div key={index} className="border-b mb-10">
-                                <div className="flex justify-between mx-4">
-                                    <div>
-                                        <div className="text-xl">Order : {x.date}</div>
-                                        <span className={`${x.isDeliver ? "text-green-600" : "text-yellow-500"} text-sm`}>
-                                            {x.status}
-                                        </span>
-                                    </div>
-
-                                    {x.isApplicableForCancel && <button
+                                        {/* {x.isApplicableForCancel && <button
                                         onClick={() => handleCancelClick(x.id)}
                                         className={`${!isAuthenticated ? "hidden" : "block"} px-4 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}
                                     >
@@ -148,41 +173,28 @@ export default function Order() {
                                         title="Are you sure?"
                                     >
                                         <p>Do you really want to cancel this Order?</p>
-                                    </Popup>
+                                    </Popup> */}
+                                    </div>
+
+                                    {x.items.map((i, idx) => (
+                                        <OrderCard
+                                            key={idx}
+                                            price={i.price}
+                                            name={i.name}
+                                            quantity={i.quantity}
+                                            image={i.image}
+                                            productId={i.productId}
+                                        />
+                                    ))}
                                 </div>
-
-                                {x.items.map((i, idx) => (
-                                    <OrderCard
-                                        key={idx}
-                                        price={i.price}
-                                        name={i.name}
-                                        quantity={i.quantity}
-                                        image={i.image}
-                                        productId={i.productId}
-                                    />
-                                ))}
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
 
 
 
 
-                </div>
-            </div>
-            {false
-                && (
-                    <div className='h-screen flex justify-center items-center'>
-                        <div className="text-center py-12">
-                            <div className="text-gray-400 mb-4">
-                                <ShoppingCart className="h-16 w-16 mx-auto" />
-                            </div>
-                            <h3 className="text-xl font-semibold text-gray-600 mb-2">Your DiwaliLux Cart is empty</h3>
-                            <p className="text-gray-500">Start exploring our festive collection and add your favorites to make this Diwali even more special!</p>
-                        </div>
                     </div>
-
-                )
+                </div>
             }
         </div>
     )

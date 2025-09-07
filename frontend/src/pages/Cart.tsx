@@ -6,32 +6,38 @@ import { Button } from '../components/Button'
 import CartCard from '../components/CartCard'
 import Profile from '../components/Profile'
 import { useRecoilValue } from 'recoil'
-import { deliveryPersonAddressAtom, deliveryPersonNameAtom, deliveryPersonNumberAtom, isAuthenticatedAtom } from '../store/Atom'
+import { deliveryDistrictAtom, deliveryPersonAddressAtom, deliveryPersonNameAtom, deliveryPersonNumberAtom, deliveryPincodeAtom, deliveryStateAtom, isAuthenticatedAtom, isDeliveryPolicyCheckedAtom } from '../store/Atom'
 import { useCartItems } from '../hooks'
 import * as Tooltip from '@radix-ui/react-tooltip';
 
 import { useState } from 'react'
 import AdressPopup from '../components/AddressPopup'
-import type { OrderBuyType, orderItemType } from '@yashxdev/diwalilux-common'
+import type { OrderBuyType, orderItemType, deliveryAddressType } from '@yashxdev/diwalilux-common'
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
 import { Bounce, toast } from 'react-toastify'
+import OrderPlacePopup from '../components/OrderPlacePopup'
 
 export default function Cart() {
-    const navigate = useNavigate();
+    
     const isAuthenticated = useRecoilValue(isAuthenticatedAtom);
-    const {  subTotal, subTotalPrice, item, hasOutOfStock } = useCartItems()
+    const { subTotal, subTotalPrice, item, hasOutOfStock } = useCartItems()
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenOrderPlacePopup, setIsOpenOrderPlacePopup] = useState(false);
     const address = useRecoilValue(deliveryPersonAddressAtom);
     const name = useRecoilValue(deliveryPersonNameAtom);
     const number = useRecoilValue(deliveryPersonNumberAtom);
+    const pinCode = useRecoilValue(deliveryPincodeAtom);
+    const state = useRecoilValue(deliveryStateAtom);
+    const district = useRecoilValue(deliveryDistrictAtom);
+    const isDeliveryPolicyChecked = useRecoilValue(isDeliveryPolicyCheckedAtom);
 
     const closeAddressPopup = () => {
         if (!name.trim()) {
             toast.error("Name is required");
             return; // Save a network request
         }
-        if (!number.trim() ) {
+        if (!number.trim()) {
             toast.error("Contact is required");
             return; // Save a network request
         }
@@ -43,13 +49,43 @@ export default function Cart() {
             toast.error("Address is required");
             return;
         }
+        if (!pinCode.trim()) {
+            toast.error("Pincode is required");
+            return;
+        }
+        if (!district.trim()) {
+            toast.error("District is required");
+            return;
+        }
+        if (!state.trim()) {
+            toast.error("State is required");
+            return;
+        }
+        if (!isDeliveryPolicyChecked) {
+            toast.error("⚠️ Please read and check the delivery policy before proceeding.");
+            return;
+        }
+
         setIsOpen(false)
     }
 
+    const checkOutOpen = () =>{
+        if(subTotal < 1 ){
+            toast.error("The minimum order quantity is 10 pieces. Please contact us on WhatsApp!");
+            setIsOpen(false)
+            return
+        }else{
+            setIsOpen(true)
+        }
+    }
+
     const handleConfirm = async () => {
-        if (!name.trim() || !number.trim() || !address.trim()) {
+        if (!name.trim() || !number.trim() || !address.trim() || !district.trim() 
+            || !state.trim() || !pinCode.trim() || !isDeliveryPolicyChecked) {
             return;
         }
+
+        setIsOpenOrderPlacePopup(true)
 
         // Example: if you already have an array `item`
         const newItems: orderItemType[] = item.map((i) => ({
@@ -60,13 +96,20 @@ export default function Cart() {
         }));
         const userId = localStorage.getItem("userId") ?? "";
 
+        const deliveryDetails: deliveryAddressType = {
+            fullName: name,
+            phoneNo: number,
+            Address: address,
+            district: district,
+            state: state,
+            pincode: pinCode,
+        }
+
         const order: OrderBuyType = {
             userId: userId,
             items: newItems,
             totalAmount: subTotalPrice,
-            name: name,
-            phoneNo: number,
-            address: address,
+            delivery: deliveryDetails,
             status: "PENDING",
         };
 
@@ -82,20 +125,8 @@ export default function Cart() {
                     }
                 }
             );
-            navigate("/orders")
-            const message = response.data.message
-            toast.success(message, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-
+            const paymentLink = response.data.paymentLink
+            window.location.href = paymentLink;
         } catch (ex: any) {
             const errorMessage = ex.response?.data?.message || ex.message || "Something went wrong!";
             toast.error(errorMessage, {
@@ -118,7 +149,10 @@ export default function Cart() {
         window.open('https://wa.me/918448455466?text=Hello!', '_blank');
     };
 
-
+    let isCartEmpty = false;
+    if (!item || item.length === 0) {
+        isCartEmpty = true
+    }
 
 
     return (
@@ -156,112 +190,110 @@ export default function Cart() {
                 </div>
             </header>
 
-            <div className='mt-16  flex flex-col space-y-5 justify-center container mx-auto px-4 '>
-                <div className='bg-white'>
-                    <div className='flex justify-between border-b m-4 pb-4'>
-                        <div className=' text-3xl '>
-                            Shopping Cart
-                        </div>
-
-                        {hasOutOfStock && <Tooltip.Provider delayDuration={150}>
-                            <Tooltip.Root>
-                                <Tooltip.Trigger asChild>
-
-                                    <button disabled className={`${!isAuthenticated ? "md:hidden" : "md:block"} disabled:bg-gray-400 hidden md:block px-4 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
-                                        Proceed to Buy
-                                    </button>
-
-                                </Tooltip.Trigger>
-                                <Tooltip.Portal>
-                                    <Tooltip.Content
-                                        side="top"
-                                        className="z-50 rounded bg-gray-900 px-2 py-1 text-xs text-white data-[state=delayed-open]:animate-in data-[state=closed]:animate-out"
-                                    >
-                                        Out of stock — adjust quantities
-                                        <Tooltip.Arrow className="fill-gray-900" />
-                                    </Tooltip.Content>
-                                </Tooltip.Portal>
-                            </Tooltip.Root>
-                        </Tooltip.Provider>
-                        }
-
-                        {!hasOutOfStock && <button onClick={() => setIsOpen(true)} className={`${!isAuthenticated ? "md:hidden" : "md:block"}  hidden md:block px-4 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
-                            Proceed to Buy
-                        </button>}
-
-                        <AdressPopup
-                            isOpen={isOpen}
-                            onClose={closeAddressPopup}
-                            onConfirm={handleConfirm}
-                            onCloseX={() => (setIsOpen(false))}
-                        />
-
-                    </div>
-                    {item.map((i, idx) => (
-                        <CartCard
-                            key={i.id || idx}
-                            id={i.id}
-                            name={i.name}
-                            quantity={i.quantity}
-                            inStock={i.inStock}
-                            price={i.price}
-                            originalPrice={i.originalPrice}
-                            image={i.image}
-                            productId={i.productId}
-                        />
-                    ))}
-
-                    <div className="mb-8 mt-1 text-right mx-4 text-lg ">
-                        Subtotal ({subTotal} items): <span className='font-bold'>₹{formatPrice(subTotalPrice)}</span>
-
-                        {hasOutOfStock && <Tooltip.Provider delayDuration={150}>
-                            <Tooltip.Root>
-                                <Tooltip.Trigger asChild>
-                                    <span className="inline-block">
-                                        <button disabled={hasOutOfStock} className={`${!isAuthenticated ? "hidden" : "block"} disabled:bg-gray-400 md:hidden px-4 py-1 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
-                                            Proceed to Buy
-                                        </button>
-                                    </span>
-                                </Tooltip.Trigger>
-                                <Tooltip.Portal>
-                                    <Tooltip.Content
-                                        side="top"
-                                        className="z-50 rounded bg-gray-900 px-2 py-1 text-xs text-white data-[state=delayed-open]:animate-in data-[state=closed]:animate-out"
-                                    >
-                                        Out of stock — adjust quantities
-                                        <Tooltip.Arrow className="fill-gray-900" />
-                                    </Tooltip.Content>
-                                </Tooltip.Portal>
-                            </Tooltip.Root>
-                        </Tooltip.Provider>}
-
-                        {!hasOutOfStock &&
-                            <span className="inline-block">
-                                <button onClick={() => setIsOpen(true)} className={`${!isAuthenticated ? "hidden" : "block"}  md:hidden px-4 py-1 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
-                                    Proceed to Buy
-                                </button>
-                            </span>
-                        }
-
-
-
-
-                    </div>
-                </div>
-            </div>
-            {false
-                && (
+            {isCartEmpty ?
+                (
                     <div className='h-screen flex justify-center items-center'>
                         <div className="text-center py-12">
                             <div className="text-gray-400 mb-4">
-                                <ShoppingCart className="h-16 w-16 mx-auto" />
+                                <ShoppingCart className="h-16 w-16 mx-auto text-orange-400" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-600 mb-2">Your DiwaliLux Cart is empty</h3>
                             <p className="text-gray-500">Start exploring our festive collection and add your favorites to make this Diwali even more special!</p>
                         </div>
                     </div>
-
                 )
+                :
+                <div className='mt-16  flex flex-col space-y-5 justify-center container mx-auto px-4 '>
+                    <div className='bg-white'>
+                        <div className='flex justify-between border-b m-4 pb-4'>
+                            <div className=' text-3xl '>
+                                Shopping Cart
+                            </div>
+
+                            {hasOutOfStock && <Tooltip.Provider delayDuration={150}>
+                                <Tooltip.Root>
+                                    <Tooltip.Trigger asChild>
+
+                                        <button disabled className={`${!isAuthenticated ? "md:hidden" : "md:block"} disabled:bg-gray-400 hidden md:block px-4 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
+                                            Checkout
+                                        </button>
+
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                        <Tooltip.Content
+                                            side="top"
+                                            className="z-50 rounded bg-gray-900 px-2 py-1 text-xs text-white data-[state=delayed-open]:animate-in data-[state=closed]:animate-out"
+                                        >
+                                            Out of stock — adjust quantities
+                                            <Tooltip.Arrow className="fill-gray-900" />
+                                        </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                </Tooltip.Root>
+                            </Tooltip.Provider>
+                            }
+
+                            {!hasOutOfStock && <button onClick={checkOutOpen} className={`${!isAuthenticated ? "md:hidden" : "md:block"}  hidden md:block px-4 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
+                                Checkout
+                            </button>}
+
+                            <AdressPopup
+                                isOpen={isOpen}
+                                onClose={closeAddressPopup}
+                                onConfirm={handleConfirm}
+                                onCloseX={() => (setIsOpen(false))}
+                            />
+
+                        </div>
+                        {item.map((i, idx) => (
+                            <CartCard
+                                key={i.id || idx}
+                                id={i.id}
+                                name={i.name}
+                                quantity={i.quantity}
+                                inStock={i.inStock}
+                                price={i.price}
+                                originalPrice={i.originalPrice}
+                                image={i.image}
+                                productId={i.productId}
+                            />
+                        ))}
+
+                        <div className="mb-8 mt-1 text-right mx-4 text-lg ">
+                            Subtotal ({subTotal} items): <span className='font-bold'>₹{formatPrice(subTotalPrice)}</span>
+
+                            {hasOutOfStock && <Tooltip.Provider delayDuration={150}>
+                                <Tooltip.Root>
+                                    <Tooltip.Trigger asChild>
+                                        <span className="inline-block">
+                                            <button disabled={hasOutOfStock} className={`${!isAuthenticated ? "hidden" : "block"} disabled:bg-gray-400 md:hidden px-4 py-1 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
+                                                Checkout
+                                            </button>
+                                        </span>
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                        <Tooltip.Content
+                                            side="top"
+                                            className="z-50 rounded bg-gray-900 px-2 py-1 text-xs text-white data-[state=delayed-open]:animate-in data-[state=closed]:animate-out"
+                                        >
+                                            Out of stock — adjust quantities
+                                            <Tooltip.Arrow className="fill-gray-900" />
+                                        </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                </Tooltip.Root>
+                            </Tooltip.Provider>}
+
+                            {!hasOutOfStock &&
+                                <span className="inline-block">
+                                    <button onClick={checkOutOpen} className={`${!isAuthenticated ? "hidden" : "block"}  md:hidden px-4 py-1 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}>
+                                        Checkout
+                                    </button>
+                                </span>
+                            }
+
+                            {isOpenOrderPlacePopup && <OrderPlacePopup isOpen={isOpenOrderPlacePopup}/>}
+                        </div>
+                    </div>
+                </div>
             }
         </div>
     )

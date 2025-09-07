@@ -163,6 +163,10 @@ export interface Order {
   items: OrderItem[];
   isDeliver: boolean,
   isApplicableForCancel: boolean,
+  address: string,
+  pincode: string,
+  district: string,
+  state: string
 }
 
 export const useOrderItems = () => {

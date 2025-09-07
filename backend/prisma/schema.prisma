@@ -83,12 +83,14 @@ model Order {
   userId      String
   items       OrderItem[]
   totalAmount Int
-  name        String
-  phoneNo     String
-  Address     String
   status      OrderStatus  @default(PENDING)
+  razorpayLinkId    String?      // Razorpay payment link id
+  razorpayLink      String?      // URL of payment link
+  razorpayPaymentId String?
+  razorpaySignature String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  delivery    DeliveryAddress? 
 }
 
 model OrderItem {
@@ -101,6 +103,17 @@ model OrderItem {
   price     Int      // snapshot price at order time
 }
 
+model DeliveryAddress {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @unique // One order -> One delivery address
+  fullName  String
+  phoneNo   String
+  Address   String
+  district  String
+  state     String
+  pincode   String
+}
 
 
 enum OrderStatus {

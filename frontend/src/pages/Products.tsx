@@ -98,7 +98,7 @@ export default function Products() {
 
                             <Button onClick={loginAndVisitCart} classname="h-10 flex justify-center items-center text-white px-2  rounded-lg py-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
                                 <ShoppingCart className="h-4 w-4 mr-2" />
-                                <span className="hidden md:block">Cart (0)</span>
+                                <span className="hidden md:block">Cart </span>
                             </Button>
 
                         </div>

@@ -7,6 +7,7 @@ interface LabelledInputType {
   type?: string;
   max?: number; // number of characters
   digitsOnly?: boolean;
+  value?: string
 }
 
 export default function LabelledInput({
@@ -15,7 +16,8 @@ export default function LabelledInput({
   onChange,
   type = "text",
   max,
-  digitsOnly
+  digitsOnly,
+  value
 }: LabelledInputType) {
   return (
     <div>
@@ -24,6 +26,7 @@ export default function LabelledInput({
       </label>
       <input
         onChange={onChange}
+        value={value}
         onInput={(e) => {
           const input = e.target as HTMLInputElement;
           let value = input.value;

@@ -60,6 +60,15 @@ export declare const orderItemSchema: z.ZodObject<{
     price: z.ZodNumber;
 }, z.core.$strip>;
 export type orderItemType = z.infer<typeof orderItemSchema>;
+export declare const deliveryAddressSchema: z.ZodObject<{
+    fullName: z.ZodString;
+    phoneNo: z.ZodString;
+    Address: z.ZodString;
+    district: z.ZodString;
+    state: z.ZodString;
+    pincode: z.ZodString;
+}, z.core.$strip>;
+export type deliveryAddressType = z.infer<typeof deliveryAddressSchema>;
 export declare const orderBuySchema: z.ZodObject<{
     userId: z.ZodString;
     items: z.ZodArray<z.ZodObject<{
@@ -69,9 +78,14 @@ export declare const orderBuySchema: z.ZodObject<{
         price: z.ZodNumber;
     }, z.core.$strip>>;
     totalAmount: z.ZodNumber;
-    name: z.ZodString;
-    phoneNo: z.ZodString;
-    address: z.ZodString;
+    delivery: z.ZodObject<{
+        fullName: z.ZodString;
+        phoneNo: z.ZodString;
+        Address: z.ZodString;
+        district: z.ZodString;
+        state: z.ZodString;
+        pincode: z.ZodString;
+    }, z.core.$strip>;
     status: z.ZodString;
 }, z.core.$strip>;
 export type OrderBuyType = z.infer<typeof orderBuySchema>;

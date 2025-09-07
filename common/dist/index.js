@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.orderBuySchema = exports.orderItemSchema = exports.addItemToCart = exports.forgetPassword = exports.sendOtp = exports.VerifyOTP = exports.createProduct = exports.signinInput = exports.signupInput = void 0;
+exports.orderBuySchema = exports.deliveryAddressSchema = exports.orderItemSchema = exports.addItemToCart = exports.forgetPassword = exports.sendOtp = exports.VerifyOTP = exports.createProduct = exports.signinInput = exports.signupInput = void 0;
 const zod_1 = require("zod");
 // signup
 exports.signupInput = zod_1.z.object({
@@ -55,12 +55,22 @@ exports.orderItemSchema = zod_1.z.object({
     quantity: zod_1.z.number().int().positive(),
     price: zod_1.z.number().int().nonnegative(), // snapshot price
 });
+exports.deliveryAddressSchema = zod_1.z.object({
+    fullName: zod_1.z.string().min(2, "Full name must be at least 2 characters"),
+    phoneNo: zod_1.z
+        .string()
+        .regex(/^[6-9]\d{9}$/, "Phone number must be a valid 10-digit Indian number"),
+    Address: zod_1.z.string().min(5, "Address must be at least 5 characters long"),
+    district: zod_1.z.string().min(2, "District is required"),
+    state: zod_1.z.string().min(2, "State is required"),
+    pincode: zod_1.z
+        .string()
+        .regex(/^\d{6}$/, "Pincode must be a 6-digit number"),
+});
 exports.orderBuySchema = zod_1.z.object({
     userId: zod_1.z.string(),
     items: zod_1.z.array(exports.orderItemSchema).nonempty(),
     totalAmount: zod_1.z.number().int().nonnegative(),
-    name: zod_1.z.string().min(1),
-    phoneNo: zod_1.z.string().min(8).max(15), // can add regex if needed
-    address: zod_1.z.string().min(5),
+    delivery: exports.deliveryAddressSchema,
     status: zod_1.z.string(), // maybe better: z.enum(["PENDING", "CONFIRMED", "CANCELLED"]) 
 });

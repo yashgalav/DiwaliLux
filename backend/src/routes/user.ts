@@ -147,12 +147,12 @@ userRouter.post("/auth/google-login", async (c) => {
     let user = await prisma.user.findUnique({
       where: { googleId },
     });
-    
+
 
     // Step 3: Fallback - check by email if user created without googleId
     if (!user) {
       user = await prisma.user.findUnique({
-        where: { email: payload.email}
+        where: { email: payload.email }
       });
 
       // Step 4: If user exists by email but not linked, update with googleId
@@ -423,3 +423,16 @@ userRouter.post("/forget-password", async (c) => {
   }
 });
 
+
+
+export const sendOrderConfirmationEmail = async (to: string, orderId: string) => {
+  const subject = "Your Order Has Been Confirmed!";
+  const text = `🎉 Thank you for shopping with DiwaliLux! 
+
+Your order has been successfully placed.
+Your Order ID: ${orderId}
+
+We will notify you when your order is shipped.`;
+
+  await sendResendEmail(to, subject, text);
+}

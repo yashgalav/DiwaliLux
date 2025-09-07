@@ -82,13 +82,30 @@ export const orderItemSchema = z.object({
 
 export type orderItemType = z.infer<typeof orderItemSchema>;
 
+
+export const deliveryAddressSchema = z.object({
+  
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  phoneNo: z
+    .string()
+    .regex(/^[6-9]\d{9}$/, "Phone number must be a valid 10-digit Indian number"),
+  Address: z.string().min(5, "Address must be at least 5 characters long"),
+  district: z.string().min(2, "District is required"),
+  state: z.string().min(2, "State is required"),
+  pincode: z
+    .string()
+    .regex(/^\d{6}$/, "Pincode must be a 6-digit number"),
+});
+
+
+export type deliveryAddressType = z.infer<typeof deliveryAddressSchema>;
+
+
 export const orderBuySchema = z.object({
   userId: z.string(),
   items: z.array(orderItemSchema).nonempty(),
   totalAmount: z.number().int().nonnegative(),
-  name: z.string().min(1),
-  phoneNo: z.string().min(8).max(15), // can add regex if needed
-  address: z.string().min(5),
+  delivery: deliveryAddressSchema,
   status: z.string(), // maybe better: z.enum(["PENDING", "CONFIRMED", "CANCELLED"]) 
 });
 

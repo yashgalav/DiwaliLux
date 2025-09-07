@@ -9,8 +9,9 @@
   "dependencies": {
     "@prisma/client": "^6.13.0",
     "@prisma/extension-accelerate": "^2.0.2",
-    "@yashxdev/diwalilux-common": "^1.1.4",
+    "@yashxdev/diwalilux-common": "^1.1.8",
     "bcryptjs": "^3.0.2",
+    "crypto-js": "^4.2.0",
     "form-data": "^4.0.4",
     "google-auth-library": "^10.2.1",
     "hono": "^4.8.12",
@@ -20,6 +21,7 @@
     "prisma": "^6.13.0"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.2.0",
     "@types/nodemailer": "^6.4.17",
     "wrangler": "^4.4.0"
