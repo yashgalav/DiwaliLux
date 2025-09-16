@@ -205,7 +205,7 @@ export default function Products() {
                                 </div>
                             }
 
-                            {
+                            { !loading &&
                                 sortedProducts.length === 0 && (
                                     <div className="text-center py-12">
                                         <div className="text-gray-400 mb-4">

@@ -80,8 +80,8 @@ export default function HomePage() {
     },
     {
       name: "Premium Stone Matki Diya Gift Set",
-      price: "₹199",
-      originalPrice: "₹239",
+      price: "₹229",
+      originalPrice: "₹259",
       image: img2,
       features: ["Handcrafted jeweled matki design", "Elegant festive gifting option", "Enhances workplace Diwali décor"],
       badge: "Most Popular",
@@ -90,7 +90,7 @@ export default function HomePage() {
     {
       name: "Decorative Round & Flower Clay Diya Set (12 Pcs)",
       price: "₹399",
-      originalPrice: "₹439",
+      originalPrice: "₹449",
       image: img3,
       features: ["Elegant handcrafted round design", "Stone-studded festive decoration", "Ideal Diwali corporate gifting"],
       badge: "Exclusive",
@@ -471,15 +471,15 @@ export default function HomePage() {
               &copy; 2025 DiwaliLux. All rights reserved. Crafted with excellence for premium celebrations.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="#" className="text-slate-400 hover:text-amber-400 transition-colors duration-300">
+              <Link  target="_blank" to="https://ik.imagekit.io/1fitxmo7x/Privacy%20Policy.pdf?updatedAt=1758035986258" className="text-slate-400 hover:text-amber-400 transition-colors duration-300">
                 Privacy
               </Link>
-              <Link to="#" className="text-slate-400 hover:text-amber-400 transition-colors duration-300">
+              <Link target="_blank" to="https://ik.imagekit.io/1fitxmo7x/Terms%20of%20Use.pdf?updatedAt=1758035986649" className="text-slate-400 hover:text-amber-400 transition-colors duration-300">
                 Terms
               </Link>
-              <Link to="#" className="text-slate-400 hover:text-amber-400 transition-colors duration-300">
+              <LinkScroll to="contact" className="text-slate-400 hover:text-amber-400 hover:cursor-pointer transition-colors duration-300">
                 Support
-              </Link>
+              </LinkScroll>
             </div>
           </div>
         </div>
