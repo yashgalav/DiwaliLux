@@ -436,3 +436,7 @@ We will notify you when your order is shipped.`;
 
   await sendResendEmail(to, subject, text);
 }
+
+userRouter.get("/ping", async (c) => {
+  return c.json({ status: "Ok", time: new Date().toISOString() }, 200);
+});
