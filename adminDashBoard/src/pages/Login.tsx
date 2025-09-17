@@ -112,9 +112,6 @@ export default function Login() {
                     </div>
                 </div>
 
-                <Heading customClassname="text-center text-sm 2xl:text-3xl mt-5 font-light text-slate-400" label="" links={{ text: "Or Continue as Guest (Read-Only)", to: "/admin" }} />
-
-
             </div>
         </div>
     )
