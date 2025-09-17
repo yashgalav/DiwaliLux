@@ -413,7 +413,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div>
+            {/* <div>
               <h4 className="font-bold mb-6 text-lg">Collections</h4>
               <ul className="space-y-3 text-slate-400">
                 <li>
@@ -463,7 +463,7 @@ export default function HomePage() {
                   </Link>
                 </li>
               </ul>
-            </div>
+            </div> */}
           </div>
 
           <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
