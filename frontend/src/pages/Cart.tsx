@@ -199,6 +199,11 @@ export default function Cart() {
                             </div>
                             <h3 className="text-xl font-semibold text-gray-600 mb-2">Your DiwaliLux Cart is empty</h3>
                             <p className="text-gray-500">Start exploring our festive collection and add your favorites to make this Diwali even more special!</p>
+                            <Link to={"/products"}>
+                            <button className="mt-4 px-5 py-2 bg-orange-500 text-white rounded-lg cursor-pointer hover:bg-orange-600 transition">
+                                Shop Now
+                            </button>
+                        </Link>
                         </div>
                     </div>
                 )

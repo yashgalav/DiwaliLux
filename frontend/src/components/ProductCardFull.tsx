@@ -9,6 +9,7 @@ import { BACKEND_URL } from '../config'
 import { useNavigate } from 'react-router-dom'
 import { useRef } from 'react'
 import { debounce } from "lodash";
+import { Bounce, toast } from 'react-toastify'
 
 interface ProductCardFullType {
     id: string,
@@ -53,6 +54,18 @@ export default function ProductCardFull({ id, image, features, inStock, popular,
                 }
             );
             console.log(`Added ${quantityRef.current} items to cart`);
+            const message = `Added ${quantityRef.current} ${quantityRef.current > 1 ? "items" : "item"} to cart`;
+            toast.success(message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         } catch (err) {
             console.error(err);
         }

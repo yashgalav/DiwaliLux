@@ -413,28 +413,20 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* <div>
+            <div>
               <h4 className="font-bold mb-6 text-lg">Collections</h4>
               <ul className="space-y-3 text-slate-400">
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
-                    Heritage Ensembles
-                  </Link>
+                <li className="hover:text-amber-400 transition-colors duration-300">
+                    Premium Stone Matki Diya
                 </li>
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
-                    Executive Hampers
-                  </Link>
+                <li className="hover:text-amber-400 transition-colors duration-300">
+                    Decorative Round & Flower Clay Diya 
                 </li>
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
-                    Maharaja Collections
-                  </Link>
+                <li className="hover:text-amber-400 transition-colors duration-300">
+                    Decorative Square Clay Diya
                 </li>
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
+                <li className="hover:text-amber-400 transition-colors duration-300">
                     Bespoke Solutions
-                  </Link>
                 </li>
               </ul>
             </div>
@@ -442,28 +434,20 @@ export default function HomePage() {
             <div>
               <h4 className="font-bold mb-6 text-lg">Services</h4>
               <ul className="space-y-3 text-slate-400">
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
+                <li className="hover:text-amber-400 transition-colors duration-300">
                     Corporate Gifting
-                  </Link>
                 </li>
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
+                <li className="hover:text-amber-400 transition-colors duration-300">
                     Custom Branding
-                  </Link>
                 </li>
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
+                <li className="hover:text-amber-400 transition-colors duration-300">
                     Bulk Solutions
-                  </Link>
                 </li>
-                <li>
-                  <Link to="#" className="hover:text-amber-400 transition-colors duration-300">
+                <li className="hover:text-amber-400 transition-colors duration-300">
                     White Glove Service
-                  </Link>
                 </li>
               </ul>
-            </div> */}
+            </div>
           </div>
 
           <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
