@@ -4,7 +4,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { authMiddleware } from "../../../backend/src/middleware/middleware";
 import { deliveryAddressSchema, orderBuySchema } from "@yashxdev/diwalilux-common";
-import {sendOrderConfirmationEmail} from "./user"
+import { sendOrderConfirmationEmail } from "./user"
 // import crypto from "crypto-js";
 import crypto from "crypto";
 
@@ -16,7 +16,7 @@ export const orderRouter = new Hono<{
     RAZORPAY_KEY_ID: string;
     RAZORPAY_KEY_SECRET: string;
     FRONTEND_BASE_URL: string;
-    RAZORPAY_WEBHOOK_SECRET:string;
+    RAZORPAY_WEBHOOK_SECRET: string;
   },
   Variables: {
     userId: string
@@ -94,7 +94,7 @@ export const orderRouter = new Hono<{
 //       const key_secret = c.env.RAZORPAY_KEY_SECRET;
 
 //       console.log("here 1");
-      
+
 //       const res = await fetch("https://api.razorpay.com/v1/payment_links", {
 //         method: "POST",
 //         headers: {
@@ -223,7 +223,7 @@ orderRouter.post("/request", authMiddleware, async (c) => {
         amount: totalAmount * 100,
         currency: "INR",
         description: `Payment for Order #${order.id}`,
-        reference_id: order.id, 
+        reference_id: order.id,
         customer: {
           name: delivery.fullName,
           contact: delivery.phoneNo,
@@ -302,7 +302,7 @@ orderRouter.get("/my", authMiddleware, async (c) => {
         });
       const isDeliver = order.status === 'DELIVERED'
       const isApplicableForCancel = order.status === 'PAID'
-    
+
 
       return {
         id: order.id,
@@ -492,7 +492,7 @@ orderRouter.post("/cancel/:id", authMiddleware, async (c) => {
 
 
 orderRouter.post("/webhook/verify-payment", async (c) => {
-  try { 
+  try {
     // 1️⃣ Get raw body (important for signature check)
     const rawBody = await c.req.text();
     const signature = c.req.header("X-Razorpay-Signature");
@@ -523,16 +523,40 @@ orderRouter.post("/webhook/verify-payment", async (c) => {
       }).$extends(withAccelerate());
 
       const order = await prisma.order.update({
-        where: {id: orderId, razorpayLinkId: paymentLinkId },
+        where: { id: orderId, razorpayLinkId: paymentLinkId },
         data: {
           status: "PAID",
           razorpayPaymentId: paymentId,
         },
       });
 
-      const user  = await prisma.user.findUnique({where:{id: order.userId}})
-      if(user)
-        await sendOrderConfirmationEmail(user.email ,orderId)
+      const user = await prisma.user.findUnique({ where: { id: order.userId } })
+      if (user)
+        await sendOrderConfirmationEmail(user.email, orderId)
+
+
+      // 3. Update product stock
+      const orderUpdated = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
+
+      if (!orderUpdated) {
+        c.status(404);
+        return c.json({ error: "Order not found" });
+      }
+
+      const items = orderUpdated.items;
+      for (const item of items) {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: {
+            quantity: {
+              decrement: item.quantity, // decrease stock
+            },
+          },
+        });
+      }
 
       console.log(`✅ Order updated: ${paymentLinkId} marked as PAID`);
     }
@@ -543,3 +567,82 @@ orderRouter.post("/webhook/verify-payment", async (c) => {
     return c.json({ success: false, message: "Internal server error" }, 500);
   }
 });
+
+
+orderRouter.post("/payment/:orderId", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env?.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // ✅ Call Razorpay after DB commit
+  try {
+    const orderId = c.req.param("orderId");
+    const key_id = c.env.RAZORPAY_KEY_ID;
+    const key_secret = c.env.RAZORPAY_KEY_SECRET;
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId }
+    })
+    if (!order) {
+      c.status(404);
+      return c.json({ error: "Order not found" });
+    }
+    const totalAmount = order.totalAmount;
+
+    const delivery = await prisma.deliveryAddress.findUnique({
+      where: { orderId: orderId }
+    });
+
+    if (!delivery) {
+      c.status(404);
+      return c.json({ error: "Address not found" });
+    }
+
+    const res = await fetch("https://api.razorpay.com/v1/payment_links", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Basic " + btoa(`${key_id}:${key_secret}`),
+      },
+      body: JSON.stringify({
+        amount: totalAmount * 100,
+        currency: "INR",
+        description: `Payment for Order #${order.id}`,
+        reference_id: order.id,
+        customer: {
+          name: delivery.fullName,
+          contact: delivery.phoneNo,
+        },
+        notify: { sms: true, email: false },
+        callback_url: `${c.env.FRONTEND_BASE_URL}/orders`,
+      }),
+    });
+
+    const data: any = await res.json();
+    if (!res.ok) {
+      console.error("Razorpay error:", data);
+      c.status(400);
+      return c.json({ success: false, message: data.error?.description || "Razorpay error" });
+    }
+
+    // ✅ Update order with Razorpay link
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        razorpayLinkId: data.id,
+        razorpayLink: data.short_url,
+      },
+    });
+
+    return c.json({
+      success: true,
+      message: "Payment Link generated",
+      paymentLink: data.short_url,
+      orderId: order.id,
+    });
+  } catch (err) {
+    console.error("Order creation error:", err);
+    c.status(500);
+    return c.json({ message: "Something went wrong while creating the order." });
+  }
+})

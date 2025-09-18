@@ -102,7 +102,7 @@ export default function Login() {
                             onChange={(e) =>
                                 setSigninInput({
                                     ...signinInput,
-                                    password: e.target.value.toLowerCase()
+                                    password: e.target.value
                                 })}
                         />
 

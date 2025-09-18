@@ -27,7 +27,7 @@ export default function OrderCard({ name, price, image, quantity} :OrderItem ) {
                                 Qty: {quantity} 
                             </span>
                         </span>
-                        
+
                     </div>
                     <div className='flex flex-col text-xl font-normal w-full md:text-right '>
                         

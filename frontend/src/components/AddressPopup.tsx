@@ -23,8 +23,6 @@ export default function AdressPopup({ isOpen, onClose, onCloseX, onConfirm }: Po
 
 
   
-
-
   const handlePincodeChange = async (value: string) => {
 
     if (/^\d{6}$/.test(value)) {
@@ -80,6 +78,57 @@ export default function AdressPopup({ isOpen, onClose, onCloseX, onConfirm }: Po
       setDistrict("");
     }
   };
+
+
+//   const handlePincodeChange = async (value: string) => {
+//   if (/^\d{6}$/.test(value)) {
+//     try {
+//       // ✅ Lookup from offline pincode data
+//       const details = pincodeDirectory[value];
+
+//       if (details) {
+//         setState(details.stateName);
+//         setDistrict(details.district);
+//         console.log("State:", details.stateName, "District:", details.district);
+//       } else {
+//         // If pincode not found
+//         setState("");
+//         setDistrict("");
+//         toast.error("Invalid Pincode!", {
+//           position: "top-center",
+//           autoClose: 5000,
+//           hideProgressBar: false,
+//           closeOnClick: false,
+//           pauseOnHover: true,
+//           draggable: true,
+//           progress: undefined,
+//           theme: "light",
+//           transition: Bounce,
+//         });
+//       }
+//     } catch (err: any) {
+//       console.error("Error fetching location data:", err);
+//       toast.error("Failed to fetch location!", {
+//         position: "top-center",
+//         autoClose: 5000,
+//         hideProgressBar: false,
+//         closeOnClick: false,
+//         pauseOnHover: true,
+//         draggable: true,
+//         progress: undefined,
+//         theme: "light",
+//         transition: Bounce,
+//       });
+
+//       setState("");
+//       setDistrict("");
+//     }
+//   } else {
+//     // Reset when pincode is not 6 digits
+//     setState("");
+//     setDistrict("");
+//   }
+// };
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {

@@ -82,6 +82,35 @@ export default function Order() {
         isOrdersEmpty = true
     }
 
+    const paymentAgain = async (orderId: string) =>{
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await axios.post(
+                `${BACKEND_URL}/api/v1/order/payment/${orderId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            const paymentLink = response.data.paymentLink
+            window.location.href = paymentLink;
+        } catch (ex: any) {
+            const errorMessage = ex.response?.data?.message || ex.message || "Something went wrong!";
+            toast.error(errorMessage, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    }
+
 
 
 
@@ -155,7 +184,7 @@ export default function Order() {
                                             <div className="text-lg text-orange-600">Total Amount : ₹{formatPrice(x.totalAmount)}</div>
                                             <div className="flex-wrap text-sm text-gray-400">{x.address}, {x.district}</div>
                                             <div className="flex-wrap text-sm text-gray-400">{x.pincode}, {x.state}</div>
-                                            <span className={`${x.isDeliver || x.status === "PAID" ? "text-green-600 bg-green-200 rounded-lg py-1 px-2" : "text-yellow-600 bg-yellow-100 rounded-lg py-1 px-2"} text-sm`}>
+                                            <span className={`${x.isDeliver || x.status === "PAID" ? "text-green-600 bg-green-200 border-2 border-green-600 rounded-lg py-1 px-2" : "text-yellow-600 bg-yellow-100 border-2 border-yellow-500 rounded-lg py-1 px-2"} text-sm`}>
                                                 {x.status}
                                             </span>
                                         </div>
@@ -163,17 +192,17 @@ export default function Order() {
                                         {/* {x.isApplicableForCancel && <button
                                         onClick={() => handleCancelClick(x.id)}
                                         className={`${!isAuthenticated ? "hidden" : "block"} px-4 bg-yellow-400 hover:bg-yellow-300 rounded-full text-sm`}
-                                    >
-                                        <X />
-                                    </button>}
-                                    <Popup
-                                        isOpen={isOpen}
-                                        onClose={() => setIsOpen(false)}
-                                        onConfirm={handleConfirm}
-                                        title="Are you sure?"
-                                    >
-                                        <p>Do you really want to cancel this Order?</p>
-                                    </Popup> */}
+                                        >
+                                            <X />
+                                        </button>}
+                                        <Popup
+                                            isOpen={isOpen}
+                                            onClose={() => setIsOpen(false)}
+                                            onConfirm={handleConfirm}
+                                            title="Are you sure?"
+                                        >
+                                            <p>Do you really want to cancel this Order?</p>
+                                        </Popup> */}
                                     </div>
 
                                     {x.items.map((i, idx) => (
@@ -186,12 +215,10 @@ export default function Order() {
                                             productId={i.productId}
                                         />
                                     ))}
+                                    {x.status ==="PENDING" && <Button onClick={()=> paymentAgain(x.id)} children={"Payment pending"} classname={"bg-green-300 shadow-lg hover:shadow-2xl hover:bg-green-400 border-2 border-green-700 px-2 py-1 rounded-lg ml-6 mb-4"} />}
                                 </div>
                             );
                         })}
-
-
-
 
                     </div>
                 </div>
