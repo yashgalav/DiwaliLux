@@ -1,7 +1,7 @@
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ShoppingCart, Sparkles } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import CartCard from '../components/CartCard'
 import Profile from '../components/Profile'
@@ -128,6 +128,7 @@ export default function Cart() {
             const paymentLink = response.data.paymentLink
             window.location.href = paymentLink;
         } catch (ex: any) {
+            setIsOpenOrderPlacePopup(ex.response.data.success)
             const errorMessage = ex.response?.data?.message || ex.message || "Something went wrong!";
             toast.error(errorMessage, {
                 position: "top-center",

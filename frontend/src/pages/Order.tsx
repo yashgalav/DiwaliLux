@@ -87,6 +87,7 @@ export default function Order() {
             const token = localStorage.getItem("authToken");
             const response = await axios.post(
                 `${BACKEND_URL}/api/v1/order/payment/${orderId}`,
+                {},
                 {
                     headers: {
                         Authorization: `Bearer ${token}`

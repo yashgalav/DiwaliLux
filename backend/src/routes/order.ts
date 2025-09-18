@@ -182,6 +182,14 @@ orderRouter.post("/request", authMiddleware, async (c) => {
     const key_id = c.env.RAZORPAY_KEY_ID;
     const key_secret = c.env.RAZORPAY_KEY_SECRET;
 
+    if (totalAmount > 40000) {
+      c.status(400);
+      return c.json({
+        success: false,
+        message: "Orders above ₹40,000 cannot be processed online. Please contact support.",
+      });
+    }
+
     // ✅ Transaction for DB write
     const order = await prisma.$transaction(async (tx) => {
       const order = await tx.order.create({
@@ -597,7 +605,7 @@ orderRouter.post("/payment/:orderId", async (c) => {
       c.status(404);
       return c.json({ error: "Address not found" });
     }
-
+    console.log("Amount in rupees:", totalAmount);
     const res = await fetch("https://api.razorpay.com/v1/payment_links", {
       method: "POST",
       headers: {
