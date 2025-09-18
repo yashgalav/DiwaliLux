@@ -597,6 +597,14 @@ orderRouter.post("/payment/:orderId", async (c) => {
     }
     const totalAmount = order.totalAmount;
 
+    if (totalAmount > 40000) {
+      c.status(400);
+      return c.json({
+        success: false,
+        message: "Orders above ₹40,000 cannot be processed online. Please contact support.",
+      });
+    }
+
     const delivery = await prisma.deliveryAddress.findUnique({
       where: { orderId: orderId }
     });
