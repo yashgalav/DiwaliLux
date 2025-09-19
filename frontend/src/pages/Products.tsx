@@ -13,7 +13,7 @@ import ProductSkeleton from "../skeleton/ProductSkeleton";
 
 export default function Products() {
     const [searchTerm, setSearchTerm] = useRecoilState(inputAtom)
-    const [sortBy, setSortBy] = useState("featured")
+    const [sortBy, setSortBy] = useState("price-high")
     const [filterCategory, setFilterCategory] = useState("all")
     const navigate = useNavigate();
     const { loading, products } = useProducts();
@@ -139,10 +139,11 @@ export default function Products() {
                                 className="w-48 border rounded-lg p-2 font-light text-sm"
                             >
                                 <option value="all">All Categories</option>
-                                {/* <option value="combo">Diya & Dry Fruits Combo</option> */}
+                                <option value="Dry Fruit">Dry Fruits</option>
                                 <option value="Premium">Premium Hampers</option>
-                                <option value="Round & Flower">Luxury Collections</option>
+                                <option value="Elegant">Luxury Collections</option>
                                 <option value="matki">Matki Diyas Only</option>
+                                <option value="Jute">Jute Bags</option>
                                 <option value="diya">Diyas Only</option>
                             </select>
                         </div>
@@ -153,10 +154,10 @@ export default function Products() {
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="w-48 border rounded-lg p-2 font-light text-sm"
                             >
+                                <option value="price-high">Price: High to Low</option>
                                 <option value="featured">Featured</option>
                                 <option value="popular">Most Popular</option>
                                 <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
                                 <option value="rating">Highest Rated</option>
                             </select>
                         </div>
